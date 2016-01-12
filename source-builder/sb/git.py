@@ -144,7 +144,11 @@ class repo:
         return not (len(_status) == 1 and 'branch' in _status)
 
     def valid(self):
-        if path.exists(self.path):
+        # If self.path exists, but self.path+"/.git" does not, git looks for
+        # the first ".git" directory further up the hierarchy. This is
+        # definitely not what we want git to do, so we check for the existence
+        # for self.path+"/.git" and not just self.path:
+        if path.exists(os.path.join(self.path, ".git")):
             ec, output = self._run(['status'])
             return ec == 0
         return False
